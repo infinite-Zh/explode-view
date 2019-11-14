@@ -27,7 +27,7 @@ class ExplodeView : View {
     }
 
     private val particles: MutableList<Particle> = mutableListOf()
-    val bmp = BitmapFactory.decodeResource(resources, R.mipmap.a)
+    val bmp = BitmapFactory.decodeResource(resources, R.mipmap.th)
 
     val COUNT=1000
     private fun init() {
