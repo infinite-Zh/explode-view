@@ -2,6 +2,9 @@ package com.infinite.explode
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import com.infinite.explode.particle.GravityParticleFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,6 +26,12 @@ class MainActivity : AppCompatActivity() {
                 .attachActivity(this)
                 .factory(GravityParticleFactory())
                 .target(it)
+                .listen(object :ExplodeView.OnEndListener{
+                    override fun onEnd(view: View) {
+                        Toast.makeText(this@MainActivity,"动画结束",Toast.LENGTH_LONG).show()
+                        view.visibility=View.VISIBLE
+                    }
+                })
                 .create()
                 .explode()
         }

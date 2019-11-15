@@ -88,6 +88,10 @@ class ExplodeView : View {
                 it.move(canvas!!)
             }
         }
+        checkShouldStop(count)
+    }
+
+    private fun checkShouldStop(count: Int) {
         if (count == 0) {
             animator.cancel()
             if (mOnEndListener != null) {
@@ -113,7 +117,7 @@ class ExplodeView : View {
             }
             invalidate()
             if (v.animatedValue == 1f) {
-                targetView.visibility = VISIBLE
+                checkShouldStop(0)
             }
         }
         animator.duration = 2000
