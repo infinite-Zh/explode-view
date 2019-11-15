@@ -23,22 +23,21 @@ class ExplodeView : View {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        init()
     }
 
     private val particles: MutableList<Particle> = mutableListOf()
     val bmp = BitmapFactory.decodeResource(resources, R.mipmap.th)
 
-    val COUNT=1000
+    val COUNT = 1000
     private fun init() {
         particles.clear()
         var particle: Particle
-        var sampleX=1
-        var sampleY=1
-        val w=bmp.width
-        val h=bmp.height
+        var sampleX = 1
+        var sampleY = 1
+        val w = bmp.width
+        val h = bmp.height
 
-        while (w.times(h).div(sampleX.times(sampleY))>COUNT){
+        while (w.times(h).div(sampleX.times(sampleY)) > COUNT) {
             sampleX++
             sampleY++
         }
@@ -49,7 +48,7 @@ class ExplodeView : View {
                 particle = Particle(
                     bmp.getPixel(i, j), i, j,
                     (Math.random() - 0.5f).times(40), (Math.random() - 0.5f).times(60),
-                    0.toDouble(), 4.8
+                    0.toDouble(), 9.8
                 )
                 particles.add(particle)
             }
@@ -62,15 +61,20 @@ class ExplodeView : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-//        canvas?.translate(300f,0f)
         if (!animator.isRunning) {
             canvas?.drawBitmap(bmp, 0f, 0f, paint)
         } else {
+            var count = 0
             particles.forEach {
                 paint.color = it.color
 //                canvas?.drawCircle(it.cx.toFloat(), it.cy.toFloat(), 12f, paint)
-                canvas?.drawRect(it.cx.toFloat(), it.cy.toFloat(),
-                    it.cx+12.toFloat(),it.cy+12.toFloat(), paint)
+                if (it.cx in 1 until measuredWidth && it.cy < measuredHeight) {
+                    count++
+                    canvas?.drawRect(
+                        it.cx.toFloat(), it.cy.toFloat(),
+                        it.cx + 12.toFloat(), it.cy + 12.toFloat(), paint
+                    )
+                }
             }
         }
     }
@@ -78,10 +82,11 @@ class ExplodeView : View {
     val animator = ValueAnimator.ofFloat(0f, 1f)
 
     private fun start() {
-        if (animator.isRunning){
+        if (animator.isRunning) {
             return
         }
         init()
+        animator.removeAllUpdateListeners()
         animator.addUpdateListener { v ->
             particles.forEach { p ->
                 val value = v.animatedValue as Float
@@ -90,10 +95,9 @@ class ExplodeView : View {
 
                 p.vx += p.ax
                 p.vy += p.ay
-                invalidate()
-
-                Log.e("value", "${p.cx}###${p.cy}")
             }
+            invalidate()
+
         }
         animator.duration = 2000
         animator.start()
@@ -111,5 +115,9 @@ class ExplodeView : View {
         var cx: Int, var cy: Int,
         var vx: Double, var vy: Double,
         var ax: Double, var ay: Double
-    )
+    ) {
+        override fun toString(): String {
+            return "cx=$cx,cy=$cy,vy=$vy"
+        }
+    }
 }
