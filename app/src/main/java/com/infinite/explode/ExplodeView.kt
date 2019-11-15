@@ -54,7 +54,7 @@ class ExplodeView : View {
         particles.addAll(
             mFactory.createParticles(
                 mBitmap,
-                Rect(targetLeft, targetTop, targetView.measuredWidth, targetView.measuredHeight),
+                Rect(targetLeft, targetTop,targetLeft+ targetView.measuredWidth, targetTop+targetView.measuredHeight),
                 1000
             )
         )

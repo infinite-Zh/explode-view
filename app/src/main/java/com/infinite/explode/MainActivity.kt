@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.infinite.explode.particle.FireworkParticleFactory
 import com.infinite.explode.particle.GravityParticleFactory
 import com.infinite.explode.particle.RandomParticleFactory
+import com.infinite.explode.particle.TearDownParticleFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -15,6 +16,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        tear.setOnClickListener {
+            ExplodeView.Companion.Builder()
+                .attachActivity(this)
+                .factory(TearDownParticleFactory())
+                .target(it)
+                .create()
+                .explode()
+        }
         img.setOnClickListener {
             ExplodeView.Companion.Builder()
                 .attachActivity(this)
