@@ -9,7 +9,7 @@ import android.graphics.Paint
  */
 class GravityParticle(
     color: Int, cx: Int, cy: Int
-) : IParticle(color, cx, cy) {
+) : AbsParticle(color, cx, cy) {
     private var vx = 0.toDouble()
     private var vy = 0.toDouble()
 

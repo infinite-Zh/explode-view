@@ -18,17 +18,14 @@ class ExplodeView : View {
         defStyle
     )
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-    }
 
-    private val particles: MutableList<IParticle> = mutableListOf()
+    private val particles: MutableList<AbsParticle> = mutableListOf()
     val bmp = BitmapFactory.decodeResource(resources, R.mipmap.th)
 
     val COUNT = 1000
     private fun init() {
         particles.clear()
-        var particle: IParticle
+        var particle: AbsParticle
         var sampleX = 1
         var sampleY = 1
         val w = bmp.width
