@@ -4,13 +4,10 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import kotlin.random.Random
 
 class ExplodeView : View {
     constructor(context: Context) : super(context)
@@ -25,13 +22,13 @@ class ExplodeView : View {
         super.onSizeChanged(w, h, oldw, oldh)
     }
 
-    private val particles: MutableList<Particle> = mutableListOf()
+    private val particles: MutableList<IParticle> = mutableListOf()
     val bmp = BitmapFactory.decodeResource(resources, R.mipmap.th)
 
     val COUNT = 1000
     private fun init() {
         particles.clear()
-        var particle: Particle
+        var particle: IParticle
         var sampleX = 1
         var sampleY = 1
         val w = bmp.width
@@ -45,10 +42,8 @@ class ExplodeView : View {
 
         for (i in 0 until bmp.width step sampleX) {
             for (j in 0 until bmp.height step sampleY) {
-                particle = Particle(
-                    bmp.getPixel(i, j), i, j,
-                    (Math.random() - 0.5f).times(40), (Math.random() - 0.5f).times(60),
-                    0.toDouble(), 9.8
+                particle = GravityParticle(
+                    bmp.getPixel(i, j), i, j
                 )
                 particles.add(particle)
             }
@@ -64,17 +59,8 @@ class ExplodeView : View {
         if (!animator.isRunning) {
             canvas?.drawBitmap(bmp, 0f, 0f, paint)
         } else {
-            var count = 0
             particles.forEach {
-                paint.color = it.color
-//                canvas?.drawCircle(it.cx.toFloat(), it.cy.toFloat(), 12f, paint)
-                if (it.cx in 1 until measuredWidth && it.cy < measuredHeight) {
-                    count++
-                    canvas?.drawRect(
-                        it.cx.toFloat(), it.cy.toFloat(),
-                        it.cx + 12.toFloat(), it.cy + 12.toFloat(), paint
-                    )
-                }
+                it.move(canvas!!)
             }
         }
     }
@@ -90,11 +76,7 @@ class ExplodeView : View {
         animator.addUpdateListener { v ->
             particles.forEach { p ->
                 val value = v.animatedValue as Float
-                p.cx += p.vx.toInt()
-                p.cy += p.vy.toInt()
-
-                p.vx += p.ax
-                p.vy += p.ay
+                p.updatePosition(value)
             }
             invalidate()
 
@@ -110,14 +92,4 @@ class ExplodeView : View {
         return super.onTouchEvent(event)
     }
 
-    data class Particle(
-        val color: Int,
-        var cx: Int, var cy: Int,
-        var vx: Double, var vy: Double,
-        var ax: Double, var ay: Double
-    ) {
-        override fun toString(): String {
-            return "cx=$cx,cy=$cy,vy=$vy"
-        }
-    }
 }
