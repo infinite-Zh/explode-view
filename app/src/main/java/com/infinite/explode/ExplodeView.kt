@@ -4,10 +4,8 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +21,7 @@ class ExplodeView : View {
         defStyle
     )
 
+    private val animator = ValueAnimator.ofFloat(0f, 1f)
 
     private val particles: MutableList<AbsParticle> = mutableListOf()
     private lateinit var mFactory: IParticleFactory
@@ -34,6 +33,12 @@ class ExplodeView : View {
     private var targetTop = 0
 
     private lateinit var mWindowRect: Rect
+
+    private var mOnEndListener: OnEndListener? = null
+
+    interface OnEndListener {
+        fun onEnd(view: View)
+    }
 
     private fun init() {
         targetLeft = targetView.left
@@ -55,8 +60,17 @@ class ExplodeView : View {
         )
     }
 
-    private val paint: Paint by lazy {
-        Paint()
+    fun setOnEndListener(l: OnEndListener) {
+        mOnEndListener = l
+    }
+
+    fun explode() {
+        val lp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        _mActivity.window.addContentView(this, lp)
+        start()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -67,22 +81,18 @@ class ExplodeView : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (!animator.isRunning) {
-//            canvas?.drawBitmap(mBitmap, targetLeft.toFloat(), targetTop.toFloat(), paint)
-//            targetView.draw(canvas)
-        } else {
-            var count = 0
-            particles.forEach {
-                if (!it.outOfZone(mWindowRect)) {
-                    count++
-                    it.move(canvas!!)
-                }
+        var count = 0
+        particles.forEach {
+            if (!it.outOfZone(mWindowRect)) {
+                count++
+                it.move(canvas!!)
             }
-//            Log.e("count","$count")
+        }
+        if (count == 0) {
+            animator.cancel()
         }
     }
 
-    private val animator = ValueAnimator.ofFloat(0f, 1f)
 
     private fun start() {
         if (animator.isRunning) {
@@ -105,14 +115,6 @@ class ExplodeView : View {
         animator.start()
     }
 
-    fun explode() {
-        val lp = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        )
-        _mActivity.window.addContentView(this, lp)
-        start()
-    }
 
     companion object {
         class Builder {
