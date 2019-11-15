@@ -8,7 +8,7 @@ import android.graphics.Rect
  * Created on 2019/11/15.
  */
 class FireworkParticleFactory : IParticleFactory {
-    override fun createParticles(bitmap: Bitmap, rect: Rect,count: Int): MutableList<AbsParticle> {
+    override fun createParticles(bitmap: Bitmap, rect: Rect, count: Int): MutableList<AbsParticle> {
         val particles = mutableListOf<AbsParticle>()
         var particle: AbsParticle
         var sampleX = 1
@@ -25,7 +25,8 @@ class FireworkParticleFactory : IParticleFactory {
         for (i in 0 until bitmap.width step sampleX) {
             for (j in 0 until bitmap.height step sampleY) {
                 particle = FireworkParticle(
-                    bitmap.getPixel(i, j), i+rect.left, j+rect.top
+                    bitmap.getPixel(i, j), i + rect.left, j + rect.top,
+                    (rect.left + rect.right) / 2
                 )
                 particles.add(particle)
             }

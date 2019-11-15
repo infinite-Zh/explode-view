@@ -8,7 +8,7 @@ import android.graphics.Rect
  * @author bug小能手
  * Created on 2019/11/15.
  */
-class FireworkParticle(color:Int,cx:Int,cy:Int) :AbsParticle(color,cx, cy){
+class FireworkParticle(color:Int,cx:Int,cy:Int,centerTarget:Int) :AbsParticle(color,cx, cy){
     private var vx = 0.toDouble()
     private var vy = (-150).toDouble()
 
@@ -17,7 +17,11 @@ class FireworkParticle(color:Int,cx:Int,cy:Int) :AbsParticle(color,cx, cy){
     }
 
     init {
-        vx = (Math.random() - 0.5f).times(20)
+        vx = if (cx<centerTarget) {
+            (Math.random()).times(30)
+        }else{
+            (Math.random()-1).times(30)
+        }
     }
 
     private val paint = Paint().apply {
