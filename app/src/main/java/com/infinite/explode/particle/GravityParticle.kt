@@ -1,4 +1,4 @@
-package com.infinite.explode
+package com.infinite.explode.particle
 
 import android.graphics.Canvas
 import android.graphics.Paint

@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
+import com.infinite.explode.particle.AbsParticle
+import com.infinite.explode.particle.GravityParticleFactory
+import com.infinite.explode.particle.IParticleFactory
 
 class ExplodeView : View {
     constructor(context: Context) : super(context)
@@ -20,31 +22,13 @@ class ExplodeView : View {
 
 
     private val particles: MutableList<AbsParticle> = mutableListOf()
+    private lateinit var mFactory: IParticleFactory
     val bmp = BitmapFactory.decodeResource(resources, R.mipmap.th)
 
-    val COUNT = 1000
     private fun init() {
+        mFactory=GravityParticleFactory()
         particles.clear()
-        var particle: AbsParticle
-        var sampleX = 1
-        var sampleY = 1
-        val w = bmp.width
-        val h = bmp.height
-
-        while (w.times(h).div(sampleX.times(sampleY)) > COUNT) {
-            sampleX++
-            sampleY++
-        }
-
-
-        for (i in 0 until bmp.width step sampleX) {
-            for (j in 0 until bmp.height step sampleY) {
-                particle = GravityParticle(
-                    bmp.getPixel(i, j), i, j
-                )
-                particles.add(particle)
-            }
-        }
+        particles.addAll(mFactory.createParticles(bmp,1000))
     }
 
     private val paint: Paint by lazy {
@@ -62,7 +46,7 @@ class ExplodeView : View {
         }
     }
 
-    val animator = ValueAnimator.ofFloat(0f, 1f)
+    private val animator = ValueAnimator.ofFloat(0f, 1f)
 
     private fun start() {
         if (animator.isRunning) {
@@ -82,11 +66,8 @@ class ExplodeView : View {
         animator.start()
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (event?.action == MotionEvent.ACTION_DOWN) {
-            start()
-        }
-        return super.onTouchEvent(event)
+    fun explode(){
+        start()
     }
 
 }
