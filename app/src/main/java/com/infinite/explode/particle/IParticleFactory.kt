@@ -1,6 +1,7 @@
 package com.infinite.explode.particle
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 
 /**
  * @author bug小能手
@@ -8,5 +9,5 @@ import android.graphics.Bitmap
  */
 interface IParticleFactory {
 
-    fun createParticles(bitmap: Bitmap,count:Int):MutableList<AbsParticle>
+    fun createParticles(bitmap: Bitmap,rect: Rect,count:Int):MutableList<AbsParticle>
 }

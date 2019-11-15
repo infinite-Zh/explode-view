@@ -1,13 +1,14 @@
 package com.infinite.explode.particle
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 
 /**
  * @author bug小能手
  * Created on 2019/11/15.
  */
 class GravityParticleFactory : IParticleFactory {
-    override fun createParticles(bitmap: Bitmap, count: Int): MutableList<AbsParticle> {
+    override fun createParticles(bitmap: Bitmap, rect: Rect,count: Int): MutableList<AbsParticle> {
         val particles = mutableListOf<AbsParticle>()
         var particle: AbsParticle
         var sampleX = 1
@@ -24,7 +25,7 @@ class GravityParticleFactory : IParticleFactory {
         for (i in 0 until bitmap.width step sampleX) {
             for (j in 0 until bitmap.height step sampleY) {
                 particle = GravityParticle(
-                    bitmap.getPixel(i, j), i, j
+                    bitmap.getPixel(i, j), i+rect.left, j+rect.top
                 )
                 particles.add(particle)
             }

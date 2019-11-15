@@ -5,10 +5,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.infinite.explode.particle.AbsParticle
 import com.infinite.explode.particle.IParticleFactory
@@ -29,8 +29,12 @@ class ExplodeView : View {
 
     private lateinit var mBitmap: Bitmap
     private lateinit var targetView: View
+    private var targetLeft = 0
+    private var targetTop = 0
 
     private fun init() {
+        targetLeft = targetView.left
+        targetTop = targetView.top
         mBitmap = Bitmap.createBitmap(
             targetView.measuredWidth,
             targetView.measuredHeight,
@@ -39,7 +43,13 @@ class ExplodeView : View {
         val canvas = Canvas(mBitmap)
         targetView.draw(canvas)
         particles.clear()
-        particles.addAll(mFactory.createParticles(mBitmap, 1000))
+        particles.addAll(
+            mFactory.createParticles(
+                mBitmap,
+                Rect(targetLeft, targetTop, targetView.measuredWidth, targetView.measuredHeight),
+                1000
+            )
+        )
     }
 
     private val paint: Paint by lazy {
@@ -49,7 +59,8 @@ class ExplodeView : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (!animator.isRunning) {
-            canvas?.drawBitmap(mBitmap, 0f, 0f, paint)
+//            canvas?.drawBitmap(mBitmap, targetLeft.toFloat(), targetTop.toFloat(), paint)
+//            targetView.draw(canvas)
         } else {
             particles.forEach {
                 it.move(canvas!!)
@@ -63,6 +74,7 @@ class ExplodeView : View {
         if (animator.isRunning) {
             return
         }
+        targetView.visibility=INVISIBLE
         init()
         animator.removeAllUpdateListeners()
         animator.addUpdateListener { v ->
@@ -71,7 +83,9 @@ class ExplodeView : View {
                 p.updatePosition(value)
             }
             invalidate()
-
+            if (v.animatedValue==1f){
+                targetView.visibility= VISIBLE
+            }
         }
         animator.duration = 2000
         animator.start()
@@ -83,6 +97,7 @@ class ExplodeView : View {
             FrameLayout.LayoutParams.MATCH_PARENT
         )
         _mActivity.findViewById<FrameLayout>(android.R.id.content).addView(this, lp)
+//        _mActivity.window.decorView.
         start()
     }
 
