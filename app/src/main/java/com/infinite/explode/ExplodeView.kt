@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -32,13 +33,15 @@ class ExplodeView : View {
     private var targetLeft = 0
     private var targetTop = 0
 
+    private lateinit var mWindowRect: Rect
+
     private fun init() {
         targetLeft = targetView.left
         targetTop = targetView.top
         mBitmap = Bitmap.createBitmap(
             targetView.measuredWidth,
             targetView.measuredHeight,
-            Bitmap.Config.RGB_565
+            Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(mBitmap)
         targetView.draw(canvas)
@@ -56,15 +59,26 @@ class ExplodeView : View {
         Paint()
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        mWindowRect = Rect(0, 0, w, h)
+
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (!animator.isRunning) {
 //            canvas?.drawBitmap(mBitmap, targetLeft.toFloat(), targetTop.toFloat(), paint)
 //            targetView.draw(canvas)
         } else {
+            var count = 0
             particles.forEach {
-                it.move(canvas!!)
+                if (!it.outOfZone(mWindowRect)) {
+                    count++
+                    it.move(canvas!!)
+                }
             }
+//            Log.e("count","$count")
         }
     }
 
@@ -74,7 +88,7 @@ class ExplodeView : View {
         if (animator.isRunning) {
             return
         }
-        targetView.visibility=INVISIBLE
+        targetView.visibility = INVISIBLE
         init()
         animator.removeAllUpdateListeners()
         animator.addUpdateListener { v ->
@@ -83,8 +97,8 @@ class ExplodeView : View {
                 p.updatePosition(value)
             }
             invalidate()
-            if (v.animatedValue==1f){
-                targetView.visibility= VISIBLE
+            if (v.animatedValue == 1f) {
+                targetView.visibility = VISIBLE
             }
         }
         animator.duration = 2000
@@ -96,13 +110,12 @@ class ExplodeView : View {
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         )
-        _mActivity.findViewById<FrameLayout>(android.R.id.content).addView(this, lp)
-//        _mActivity.window.decorView.
+        _mActivity.window.addContentView(this, lp)
         start()
     }
 
     companion object {
-        class Builder() {
+        class Builder {
             var _mActivity: AppCompatActivity? = null
             var mView: View? = null
 

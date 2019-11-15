@@ -2,6 +2,7 @@ package com.infinite.explode.particle
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 
 /**
  * @author bug小能手
@@ -10,6 +11,9 @@ import android.graphics.Paint
 class GravityParticle(
     color: Int, cx: Int, cy: Int
 ) : AbsParticle(color, cx, cy) {
+
+
+
     private var vx = 0.toDouble()
     private var vy = 0.toDouble()
 
@@ -39,4 +43,9 @@ class GravityParticle(
         cy += vy.toInt()
         vy += A_Y
     }
+
+    override fun outOfZone(rect: Rect): Boolean {
+        return !rect.contains(cx,cy)
+    }
+
 }
