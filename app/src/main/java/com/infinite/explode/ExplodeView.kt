@@ -60,7 +60,7 @@ class ExplodeView : View {
         )
     }
 
-    fun setOnEndListener(l: OnEndListener) {
+    fun setOnEndListener(l: OnEndListener?) {
         mOnEndListener = l
     }
 
@@ -90,6 +90,11 @@ class ExplodeView : View {
         }
         if (count == 0) {
             animator.cancel()
+            if (mOnEndListener != null) {
+                mOnEndListener!!.onEnd(targetView)
+            } else {
+                targetView.visibility = VISIBLE
+            }
         }
     }
 
@@ -120,7 +125,7 @@ class ExplodeView : View {
         class Builder {
             var _mActivity: AppCompatActivity? = null
             var mView: View? = null
-
+            var listener: OnEndListener? = null
             var factory: IParticleFactory? = null
             fun attachActivity(activity: AppCompatActivity): Builder {
                 _mActivity = activity
@@ -132,11 +137,17 @@ class ExplodeView : View {
                 return this
             }
 
+            fun listen(onEndListener: OnEndListener): Builder {
+                listener = onEndListener
+                return this
+            }
+
 
             fun factory(factory: IParticleFactory): Builder {
                 this.factory = factory
                 return this
             }
+
 
             fun create(): ExplodeView {
                 require(_mActivity != null) { "must attach an activity instance" }
@@ -147,7 +158,7 @@ class ExplodeView : View {
                 zone.mFactory = factory!!
                 zone._mActivity = _mActivity!!
                 zone.targetView = mView!!
-
+                zone.setOnEndListener(listener)
                 return zone
             }
 
